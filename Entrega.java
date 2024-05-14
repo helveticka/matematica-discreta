@@ -78,11 +78,16 @@ class Entrega {
      * És cert que ∀x : P(x) -> ∃!y : Q(x,y) ?
      */
     static boolean exercici2(int[] universe, Predicate<Integer> p, BiPredicate<Integer, Integer> q) {
+      // Iteram sobre tots els elements de l'univers
       for (int x : universe) {
+        // Si P(x) és vertader, hem de comprovar el cas en que Q(x,y) no ho sigui
         if (p.test(x)) {
           boolean trobat = false;
+          // Iteram sobre tots els elements y
           for (int y : universe) {
+            // Comprovam el cas en que es compleixi Q(x,y)
             if (q.test(x, y)) {
+              // Si ja haviem trobat y anteriorment, no és cert (més d'un y)
               if (trobat) {
                 return false;
               }
@@ -94,7 +99,7 @@ class Entrega {
           }
         }
       }
-      return true; //funciona!
+      return true;
     }
 
     /*
