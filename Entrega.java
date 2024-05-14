@@ -106,7 +106,21 @@ class Entrega {
      * És cert que ∃x : ∀y : Q(x, y) -> P(x) ?
      */
     static boolean exercici3(int[] universe, Predicate<Integer> p, BiPredicate<Integer, Integer> q) {
-      return false; // TODO
+      // Iteram sobre tots els elements de l'univers
+      for (int x : universe) {
+        boolean existeix = true;
+        // Iteram amb y sobre els elements de l'univers
+        for (int y : universe) {
+            // Si l'implicació és falsa, no existeix l'element x
+            if (q.test(x, y) && !p.test(x)) {
+                existeix = false;
+            }
+        }
+        if (existeix) {
+            return true;
+        }
+    }
+    return false;
     }
 
     /*
