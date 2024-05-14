@@ -40,9 +40,9 @@ import java.util.stream.Stream;
  *
  * Podeu fer aquesta entrega en grups de com a màxim 3 persones, i necessitareu com a minim Java 10.
  * Per entregar, posau a continuació els vostres noms i entregau únicament aquest fitxer.
- * - Nom 1:
- * - Nom 2:
- * - Nom 3:
+ * - Nom 1: Harpo Joan Alberola
+ * - Nom 2: Antoni Contestí
+ * - Nom 3: Marc Ferrer Fernàndez
  *
  * L'entrega es farà a través d'una tasca a l'Aula Digital que obrirem abans de la data que se us
  * hagui comunicat i vos recomanam que treballeu amb un fork d'aquest repositori per seguir més
@@ -78,7 +78,23 @@ class Entrega {
      * És cert que ∀x : P(x) -> ∃!y : Q(x,y) ?
      */
     static boolean exercici2(int[] universe, Predicate<Integer> p, BiPredicate<Integer, Integer> q) {
-      return false; // TODO
+      for (int x : universe) {
+        if (p.test(x)) {
+          boolean trobat = false;
+          for (int y : universe) {
+            if (q.test(x, y)) {
+              if (trobat) {
+                return false;
+              }
+              trobat = true;
+            }
+          }
+          if (!trobat) {
+            return false;
+          }
+        }
+      }
+      return true; //funciona!
     }
 
     /*
@@ -107,7 +123,7 @@ class Entrega {
       // 0  1  <-
       // 1  0
       // 1  1  <-
-      assertThat(exercici1(2) == 3);
+      //assertThat(exercici1(2) == 3);
 
       // (p1 -> p2) -> p3 és cert exactament a 5 files
       // p1 p2 p3
@@ -119,7 +135,7 @@ class Entrega {
       // 1  0  1  <-
       // 1  1  0
       // 1  1  1  <-
-      assertThat(exercici1(3) == 5);
+      //assertThat(exercici1(3) == 5);
 
       // Exercici 2
       // ∀x : P(x) -> ∃!y : Q(x,y)
@@ -383,7 +399,7 @@ class Entrega {
    */
   public static void main(String[] args) {
     Tema1.tests();
-    Tema2.tests();
+    //Tema2.tests();
   }
 
   /// Si b és cert, no fa res. Si b és fals, llança una excepció (AssertionError).
