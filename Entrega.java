@@ -41,7 +41,7 @@ import java.util.stream.Stream;
  * Podeu fer aquesta entrega en grups de com a màxim 3 persones, i necessitareu com a minim Java 10.
  * Per entregar, posau a continuació els vostres noms i entregau únicament aquest fitxer.
  * - Nom 1: Harpo Joan Alberola
- * - Nom 2: Antoni Contestí
+ * - Nom 2: Antoni Contestí Coll
  * - Nom 3: Marc Ferrer Fernàndez
  *
  * L'entrega es farà a través d'una tasca a l'Aula Digital que obrirem abans de la data que se us
@@ -142,7 +142,7 @@ class Entrega {
       // 0  1  <-
       // 1  0
       // 1  1  <-
-      //assertThat(exercici1(2) == 3);
+      assertThat(exercici1(2) == 3);
 
       // (p1 -> p2) -> p3 és cert exactament a 5 files
       // p1 p2 p3
@@ -154,7 +154,7 @@ class Entrega {
       // 1  0  1  <-
       // 1  1  0
       // 1  1  1  <-
-      //assertThat(exercici1(3) == 5);
+      assertThat(exercici1(3) == 5);
 
       // Exercici 2
       // ∀x : P(x) -> ∃!y : Q(x,y)
@@ -250,7 +250,50 @@ class Entrega {
      * Podeu soposar que `a` i `rel` estan ordenats de menor a major (`rel` lexicogràficament).
      */
     static int exercici2(int[] a, int[][] rel) {
-      return -1; // TODO
+      // Inicialitzar la matriu per a la clausura d'equivalència
+      int[][] equivalenceClosure = new int[rel.length][rel[0].length];
+      
+      // Copiar la relació original a la clausura d'equivalència
+      for (int i = 0; i < rel.length; i++) {
+          System.arraycopy(rel[i], 0, equivalenceClosure[i], 0, rel[i].length);
+      }
+      
+      // Afegir parells ordenats necessaris per a la reflexivitat
+      for (int i = 0; i < a.length; i++) {
+          equivalenceClosure[i][i] = 1;
+      }
+      
+      // Afegir parells ordenats necessaris per a la simetria
+      for (int i = 0; i < equivalenceClosure.length; i++) {
+          for (int j = 0; j < equivalenceClosure[0].length; j++) {
+              if (equivalenceClosure[i][j] == 1) {
+                  equivalenceClosure[j][i] = 1;
+              }
+          }
+      }
+      
+      // Afegir parells ordenats necessaris per a la transitivitat
+      for (int k = 0; k < equivalenceClosure.length; k++) {
+          for (int i = 0; i < equivalenceClosure.length; i++) {
+              for (int j = 0; j < equivalenceClosure[0].length; j++) {
+                  if (equivalenceClosure[i][k] == 1 && equivalenceClosure[k][j] == 1) {
+                      equivalenceClosure[i][j] = 1;
+                  }
+              }
+          }
+      }
+      
+      // Comptar el nombre de parells ordenats en la clausura d'equivalència
+      int cardinal = 0;
+      for (int i = 0; i < equivalenceClosure.length; i++) {
+          for (int j = 0; j < equivalenceClosure[0].length; j++) {
+              if (equivalenceClosure[i][j] == 1) {
+                  cardinal++;
+              }
+          }
+      }
+      
+      return cardinal;
     }
 
     /*
@@ -354,7 +397,7 @@ class Entrega {
     static void tests() {
       // Exercici 1
       // |(a u b) × (a \ c)|
-
+  
       assertThat(
           exercici1(
             new int[] { 0, 1, 2 },
@@ -483,7 +526,7 @@ class Entrega {
    */
   public static void main(String[] args) {
     Tema1.tests();
-    //Tema2.tests();
+    Tema2.tests();
   }
 
   /// Si b és cert, no fa res. Si b és fals, llança una excepció (AssertionError).
