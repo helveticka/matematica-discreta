@@ -284,6 +284,71 @@ class Entrega {
     }
 
     /*
+     * Mètode que comprova si una relació és reflexiva
+     */
+    static boolean esReflexiva(int [] a, int [][] relacio) {
+      for (int index=0; index< a.length ; index++){
+          boolean trobat = false;
+          for (int[] p : relacio) {
+              if (p[0] == index && p[1] ==index) {
+                  trobat =true ;
+                  break;
+              }
+          }
+          if (!trobat){
+              return false;
+          }
+      }
+
+      return true;
+  }
+
+  /*
+   * Mètode que comprova si una relació és transitiva
+   */
+  static boolean esTransitiva(int[][] relacio) {
+      boolean trobat;
+      for (int[] p : relacio) {
+          for (int[] q : relacio) {
+              if (p[1] == q[0]) {
+                  trobat = false;
+                  for (int[] r : relacio) {
+                      if (r[0] == p[0] && r[1] == q[1]) {
+                          trobat = true;
+                          break;
+                      }
+                  }
+                  if (!trobat){
+                      return false;
+                  }
+              }
+          }
+      }
+
+      return true;
+  }
+
+  /*
+   * Mètode que comprova si una relació és simètrica
+   */
+  static boolean esSimetrica(int [][] relacio) {
+      for (int[] p : relacio) {
+          boolean trobat = false;
+          for (int[] q : relacio) {
+              if (p[0] == q[1] && p[1] == q[0]) {
+                  trobat = true;
+                  break;
+              }
+          }
+          if (!trobat){
+              return false;
+          }
+      }
+
+      return true;
+  }
+
+    /*
      * Aquí teniu alguns exemples i proves relacionades amb aquests exercicis (vegeu `main`)
      */
     static void tests() {
