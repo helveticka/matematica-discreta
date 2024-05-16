@@ -251,43 +251,49 @@ class Entrega {
      */
     static int exercici2(int[] a, int[][] rel) {
       // Inicialitzar la matriu per a la clausura d'equivalència
-      int[][] equivalenceClosure = new int[rel.length][rel[0].length];
+      int[][] clausuraEquivalencia = new int[rel.length][rel[0].length];
       
       // Copiar la relació original a la clausura d'equivalència
       for (int i = 0; i < rel.length; i++) {
-          System.arraycopy(rel[i], 0, equivalenceClosure[i], 0, rel[i].length);
+          for (int j = 0; j < rel[0].length; j++) {
+            clausuraEquivalencia[i][j] = rel[i][j];
+          }
       }
       
       // Afegir parells ordenats necessaris per a la reflexivitat
       for (int i = 0; i < a.length; i++) {
-          equivalenceClosure[i][i] = 1;
+          clausuraEquivalencia[i][i] = 1;
       }
       
       // Afegir parells ordenats necessaris per a la simetria
-      for (int i = 0; i < equivalenceClosure.length; i++) {
-          for (int j = 0; j < equivalenceClosure[0].length; j++) {
-              if (equivalenceClosure[i][j] == 1) {
-                  equivalenceClosure[j][i] = 1;
+      for (int i = 0; i < clausuraEquivalencia.length; i++) {
+          for (int j = 0; j < clausuraEquivalencia[0].length; j++) {
+              if (clausuraEquivalencia[i][j] != clausuraEquivalencia[j][i]) {
+                  clausuraEquivalencia[j][i] = 1;
+                  clausuraEquivalencia[i][j] = 1;
               }
           }
       }
       
       // Afegir parells ordenats necessaris per a la transitivitat
-      for (int k = 0; k < equivalenceClosure.length; k++) {
-          for (int i = 0; i < equivalenceClosure.length; i++) {
-              for (int j = 0; j < equivalenceClosure[0].length; j++) {
-                  if (equivalenceClosure[i][k] == 1 && equivalenceClosure[k][j] == 1) {
-                      equivalenceClosure[i][j] = 1;
+      if (!esTransitiva(rel)) {
+        for (int k = 0; k < clausuraEquivalencia.length; k++) {
+          for (int i = 0; i < clausuraEquivalencia.length; i++) {
+              for (int j = 0; j < clausuraEquivalencia[0].length; j++) {
+                  if (clausuraEquivalencia[i][k] == 1 && clausuraEquivalencia[k][j] == 1) {
+                      clausuraEquivalencia[i][j] = 1;
                   }
               }
           }
+        }
       }
+      
       
       // Comptar el nombre de parells ordenats en la clausura d'equivalència
       int cardinal = 0;
-      for (int i = 0; i < equivalenceClosure.length; i++) {
-          for (int j = 0; j < equivalenceClosure[0].length; j++) {
-              if (equivalenceClosure[i][j] == 1) {
+      for (int i = 0; i < clausuraEquivalencia.length; i++) {
+          for (int j = 0; j < clausuraEquivalencia[0].length; j++) {
+              if (clausuraEquivalencia[i][j] == 1) {
                   cardinal++;
               }
           }
