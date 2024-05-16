@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -308,9 +309,33 @@ class Entrega {
      *
      * Podeu soposar que `a` i `rel` estan ordenats de menor a major (`rel` lexicogràficament).
      */
-    static int exercici3(int[] a, int[][] rel) {
-      return -1; // TODO
+    static int exercici3(int[] a, int[][] rel) { //FALTA METODO CREAR HASSE
+      if (!esOrdreTotal(a, rel)){
+        return -2;
+      } else {
+        int numArestes = 0;
+        //int numArestes = construirHasse(a, rel);
+        return numArestes;
+      }
+     
     }
+
+    static boolean esOrdreTotal(int[] a, int[][] rel){
+      HashSet<Integer> elements = new HashSet<>();
+      for (int x : a) {
+          elements.add(x);
+      }
+
+      for (int i = 0; i < rel.length; i++) {
+          for (int j = 0; j < rel[i].length; j++) {
+              if (!elements.contains(rel[i][j])) {
+                  return false;
+              }
+          }
+      }
+      return true;
+    }
+
 
 
     /*
@@ -328,9 +353,50 @@ class Entrega {
      * Comprovau si la funció `f` amb domini `dom` i codomini `codom` té inversa. Si la té, retornau
      * el seu graf (el de l'inversa). Sino, retornau null.
      */
-    static int[][] exercici5(int[] dom, int[] codom, Function<Integer, Integer> f) {
-      return new int[][] {}; // TODO
+    static int[][] exercici5(int[] dom, int[] codom, Function<Integer, Integer> f) { //CREO QUE HECHO, NO PROBADO
+      if (esBiyectiva(dom, codom, f)) {
+        int[][] graficoInversa = new int[codom.length][2];
+        for (int i = 0; i < codom.length; i++) {
+            int y = codom[i];
+            int x = encontrarPreimagen(y, dom, f);
+            graficoInversa[i][0] = x;
+            graficoInversa[i][1] = y;
+        }
+        return graficoInversa;
+    } else {
+        return null;
     }
+}
+
+    static boolean esBiyectiva(int[] dom, int[] codom, Function<Integer, Integer> f) {
+      Set<Integer> codomImagen = new HashSet<>();
+      for (int x : dom) {
+        int y = f.apply(x); 
+        if (!contieneElemento(codom, y) || codomImagen.contains(y)) {
+            return false; 
+        }
+        codomImagen.add(y);
+    }
+    return true;
+}
+
+static int encontrarPreimagen(int y, int[] dom, Function<Integer, Integer> f) {
+    for (int x : dom) {
+        if (f.apply(x) == y) {
+            return x;
+        }
+    }
+    return -1; 
+}
+
+static boolean contieneElemento(int[] arr, int elemento) {
+  for (int x : arr) {
+      if (x == elemento) {
+          return true;
+      }
+  }
+  return false;
+}
 
     /*
      * Mètode que comprova si una relació és reflexiva
