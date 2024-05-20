@@ -250,56 +250,74 @@ class Entrega {
      *
      * Podeu soposar que `a` i `rel` estan ordenats de menor a major (`rel` lexicogràficament).
      */
-    static int exercici2(int[] a, int[][] rel) {
-      // Inicialitzar la matriu per a la clausura d'equivalència
-      int[][] clausuraEquivalencia = new int[rel.length][rel[0].length];
-      
-      // Copiar la relació original a la clausura d'equivalència
-      for (int i = 0; i < rel.length; i++) {
-          for (int j = 0; j < rel[0].length; j++) {
-            clausuraEquivalencia[i][j] = rel[i][j];
-          }
-      }
-      
-      // Afegir parells ordenats necessaris per a la reflexivitat
-      for (int i = 0; i < a.length; i++) {
-          clausuraEquivalencia[i][i] = 1;
-      }
-      
-      // Afegir parells ordenats necessaris per a la simetria
-      for (int i = 0; i < clausuraEquivalencia.length; i++) {
-          for (int j = 0; j < clausuraEquivalencia[0].length; j++) {
-              if (clausuraEquivalencia[i][j] != clausuraEquivalencia[j][i]) {
-                  clausuraEquivalencia[j][i] = 1;
-                  clausuraEquivalencia[i][j] = 1;
-              }
-          }
-      }
-      
-      // Afegir parells ordenats necessaris per a la transitivitat
-      if (!esTransitiva(rel)) {
-        for (int k = 0; k < clausuraEquivalencia.length; k++) {
-          for (int i = 0; i < clausuraEquivalencia.length; i++) {
-              for (int j = 0; j < clausuraEquivalencia[0].length; j++) {
-                  if (clausuraEquivalencia[i][k] == 1 && clausuraEquivalencia[k][j] == 1) {
-                      clausuraEquivalencia[i][j] = 1;
-                  }
-              }
-          }
-        }
-      }
-      
-      
-      // Comptar el nombre de parells ordenats en la clausura d'equivalència
+    public static int exercici2(int[] a, int[][] rel) {
+      int n = a.length;
+      boolean[][] clausura = new boolean[n][n];
       int cardinal = 0;
-      for (int i = 0; i < clausuraEquivalencia.length; i++) {
-          for (int j = 0; j < clausuraEquivalencia[0].length; j++) {
-              if (clausuraEquivalencia[i][j] == 1) {
+
+      // Inicialitzam la clausura a false
+      for (int i = 0; i < n; i++) {
+          for (int j = 0; j < n; j++) {
+              clausura[i][j] = false;
+          }
+      }
+
+      // Omplim elements de la clausura amb les relacions que ho són
+      for (int[] pair : rel) {
+          int fila = pair[0];
+          int columna = pair[1];
+
+          // Trobam els índexs corresponents als valors de fila i columna
+          int filaIndex = -1;
+          int columnaIndex = -1;
+
+          for (int i = 0; i < n; i++) {
+              if (a[i] == fila) {
+                  filaIndex = i;
+              }
+              if (a[i] == columna) {
+                  columnaIndex = i;
+              }
+          }
+
+          // Asseguram que els índexs estan dins dels límits de la matriu
+          if (filaIndex != -1 && columnaIndex != -1) {
+              clausura[filaIndex][columnaIndex] = true;
+          }
+      }
+
+      // Aplicam la clausura reflexiva
+      for (int i = 0; i < n; i++) {
+          clausura[i][i] = true;
+      }
+
+      // Aplicam la clausura simètrica
+      for (int i = 0; i < n; i++) {
+          for (int j = 0; j < n; j++) {
+              if (clausura[i][j]) {
+                  clausura[j][i] = true;
+              }
+          }
+      }
+
+      // Aplicam la clausura transitiva (algorisme Floyd-Warshall)
+      for (int k = 0; k < n; k++) {
+          for (int i = 0; i < n; i++) {
+              for (int j = 0; j < n; j++) {
+                  clausura[i][j] = clausura[i][j] || (clausura[i][k] && clausura[k][j]);
+              }
+          }
+      }
+
+      // Comptar el cardinal
+      for (int i = 0; i < n; i++) {
+          for (int j = 0; j < n; j++) {
+              if (clausura[i][j]) {
                   cardinal++;
               }
           }
       }
-      
+
       return cardinal;
     }
 
@@ -365,8 +383,8 @@ class Entrega {
         return graficoInversa;
     } else {
         return null;
+      }
     }
-}
 
     static boolean esBiyectiva(int[] dom, int[] codom, Function<Integer, Integer> f) {
       Set<Integer> codomImagen = new HashSet<>();
@@ -376,31 +394,29 @@ class Entrega {
             return false; 
         }
         codomImagen.add(y);
-    }
-    return true;
-}
-
-static int encontrarPreimagen(int y, int[] dom, Function<Integer, Integer> f) {
-    for (int x : dom) {
-        if (f.apply(x) == y) {
-            return x;
-        }
-    }
-    return -1; 
-}
-
-static boolean contieneElemento(int[] arr, int elemento) {
-  for (int x : arr) {
-      if (x == elemento) {
-          return true;
       }
-  }
-  return false;
-}
+      return true;
+    }
 
-    /*
-     * Mètode que comprova si una relació és reflexiva
-     */
+    static int encontrarPreimagen(int y, int[] dom, Function<Integer, Integer> f) {
+        for (int x : dom) {
+            if (f.apply(x) == y) {
+                return x;
+            }
+        }
+        return -1; 
+    }
+
+    static boolean contieneElemento(int[] arr, int elemento) {
+      for (int x : arr) {
+          if (x == elemento) {
+              return true;
+          }
+      }
+      return false;
+    }
+
+    // Mètode que comprova si una relació és reflexiva
     static boolean esReflexiva(int [] a, int [][] relacio) {
       for (int index=0; index< a.length ; index++){
           boolean trobat = false;
@@ -416,11 +432,9 @@ static boolean contieneElemento(int[] arr, int elemento) {
       }
 
       return true;
-  }
+    }
 
-  /*
-   * Mètode que comprova si una relació és transitiva
-   */
+  // Mètode que comprova si una relació és transitiva
   static boolean esTransitiva(int[][] relacio) {
       boolean trobat;
       for (int[] p : relacio) {
@@ -443,9 +457,7 @@ static boolean contieneElemento(int[] arr, int elemento) {
       return true;
   }
 
-  /*
-   * Mètode que comprova si una relació és simètrica
-   */
+  // Mètode que comprova si una relació és simètrica
   static boolean esSimetrica(int [][] relacio) {
       for (int[] p : relacio) {
           boolean trobat = false;
@@ -579,7 +591,6 @@ static boolean contieneElemento(int[] arr, int elemento) {
           }
         }
       }
-
       return rel.toArray(new int[][] {});
     }
 
