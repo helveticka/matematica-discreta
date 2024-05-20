@@ -620,7 +620,32 @@ class Entrega {
      * Determinau si el graf és connex. Podeu suposar que `g` no és dirigit.
      */
     static boolean exercici1(int[][] g) {
-      return false; // TO DO
+      int n = g.length;
+      boolean[] visitats = new boolean[n];
+      
+      // Mètode de cerca profunda
+      dfs(g, 0, visitats);
+      
+      // Comprovam que tots els nodes s'han vistat
+      for (boolean nodeVisitat : visitats) {
+          if (!nodeVisitat) {
+              return false;
+          }
+      }
+      return true;
+    }
+
+    static void dfs(int[][] g, int node, boolean[] visitat) {
+      // El node actual l'hem visitat
+      visitat[node] = true;
+      
+      // Recòrrer els nodes connectats
+      for (int vei : g[node]) {
+          if (!visitat[vei]) {
+              // Si no hem visitat el vei, aplicam recursivament dfs
+              dfs(g, vei, visitat);
+          }
+      }
     }
 
     /*
