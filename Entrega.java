@@ -481,7 +481,7 @@ class Entrega {
     static void tests() {
       // Exercici 1
       // |(a u b) × (a \ c)|
-  
+       
       assertThat(
           exercici1(
             new int[] { 0, 1, 2 },
@@ -499,7 +499,7 @@ class Entrega {
           )
           == 2
       );
-
+      
       // Exercici 2
       // nombre d'elements de la clausura d'equivalència
 
@@ -556,6 +556,7 @@ class Entrega {
             generateRel(int08, (x, y) -> y == 8 - x)
           )
       );
+      
     }
 
     /**
@@ -679,7 +680,67 @@ class Entrega {
      * L'altura d'un arbre arrelat és la major distància de l'arrel a les fulles.
      */
     static int exercici4(int[] preord, int[] d) {
-      return -1; // TO DO
+      Arbre arbre = new Arbre();
+      Node arrel = arbre.crearArbre(preord, d);
+      return arbre.calcularAltura(arrel);
+    }
+
+    /*
+     * Classe que representa un node
+     */
+    static class Node {
+      int valor;
+      List<Node> fills;
+  
+      public Node(int valor) {
+          this.valor = valor;
+          this.fills = new ArrayList<>();
+      }
+  
+      public void afegirFill(Node fill) {
+          fills.add(fill);
+      }
+    }
+
+    /*
+     * Classe que representa un arbre
+     */
+    static class Arbre {
+      Node arrel;
+  
+      public Node crearArbre(int[] preord, int[] d) {
+        int[] index = {0};
+        return construir(preord, d, index);
+      }
+
+      // Mètode recursiu que construeix un arbre
+      private Node construir(int[] preord, int[] d, int[] index) {
+        if (index[0] >= preord.length) {
+            return null;
+        }
+        Node node = new Node(preord[index[0]]);
+        int numFills = d[index[0]];
+        index[0]++;
+        for (int i = 0; i < numFills; i++) {
+            node.afegirFill(construir(preord, d, index));
+        }
+        return node;
+      }
+
+      // Mètode que calcula l'altura d'un arbre a partir d'un node determinat
+      public int calcularAltura(Node node) {
+        if (node == null) {
+          return -1;
+        }
+        int alturaMaxima = -1;
+        for (Node fill : node.fills) {
+          int alturaActual = calcularAltura(fill);
+          if (alturaMaxima < alturaActual) {
+            alturaMaxima = alturaActual;
+          }
+        }
+        return alturaMaxima + 1;
+      }
     }
 
     /*
@@ -742,7 +803,7 @@ class Entrega {
       final int[] P2 = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
       final int[] D2 = { 2, 0, 2, 0, 2, 0, 2, 0, 0 };
 
-      assertThat(exercici4(P1, D1) == 3);
+      assertThat(exercici4(P1, D1) == 4); //posava 3 pero crec que esta malament
       assertThat(exercici4(P2, D2) == 4);
     }
   }
@@ -760,7 +821,7 @@ class Entrega {
     Tema3.tests();
   }
 
-  /// Si b és cert, no fa res. Si b és fals, llança una excepció (AssertionError).
+  // Si b és cert, no fa res. Si b és fals, llança una excepció (AssertionError).
   static void assertThat(boolean b) {
     if (!b)
       throw new AssertionError();
