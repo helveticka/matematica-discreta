@@ -661,7 +661,57 @@ class Entrega {
      * Retornau el nombre mínim de moviments, o -1 si no és possible arribar-hi.
      */
     static int exercici2(int w, int h, int i, int j) {
-      return -1; // TO DO
+      class Casilla{
+        int indice;
+        int[] movimientos = new int[4];
+
+        Casilla(int i, int w, int h){
+          this.indice = i;
+          this.movimientos = generarMovimientos(w, h, i);
+        }
+
+        static int[] generarMovimientos(int w, int h, int i){
+          int[] aux = new int[4];
+          int indice = 0;
+          if (w == 0 | w == 1 | h == 0 | h == 1 | (h == 2 & w == 2)){
+            return null;
+          } else {
+            if (i <= w/2){
+              i = i + 2;
+            } else {
+              i = i - 2;
+            } 
+            if (i < h/2){
+              i = i + w;
+              aux[indice] = i;
+              indice++;
+
+            } else if (i > h /2) {
+              i = i + w;
+              aux[indice] = i;
+              indice++;
+            } else {
+              int auxi;
+              auxi = i;
+              i = i + w;
+              aux[indice] = i;
+              indice++;
+              i = auxi + w;
+              aux[indice] = i;
+              indice++;
+            }
+            return aux;
+          }
+          
+        }
+      }
+      if (w == 0 | w == 1 | h == 0 | h == 1 | (h == 2 & w == 2)){
+        return -1; 
+      } else {
+
+         return 0;
+      }
+        
     }
 
     /*
