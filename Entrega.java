@@ -72,8 +72,33 @@ class Entrega {
      * Vegeu el mètode Tema1.tests() per exemples.
      */
     static int exercici1(int n) {
-      return 0; // TODO
-    }
+
+      int[] proposicions = new int[n];
+      int contador = 0;
+      int temporal;
+
+      for (int i = 0; i < (int) Math.pow(2, n); i++) {
+
+          for (int j = 0; j < n; j++) {
+              proposicions[j] = (i >> j) & 1;
+          }
+
+          temporal = proposicions[n - 1];
+
+          for (int j = n - 2; j >= 0; j--) {
+              if (temporal == 1 && proposicions[j] == 0) {
+                  temporal = 0;
+              } else {
+                  temporal = 1;
+              }
+          }
+
+          if (temporal != 0) {
+              contador++;
+          }
+      }
+      return contador;
+    } 
 
     /*
      * És cert que ∀x : P(x) -> ∃!y : Q(x,y) ?
@@ -128,8 +153,26 @@ class Entrega {
      * És cert que ∃x : ∃!y : ∀z : P(x,z) <-> Q(y,z) ?
      */
     static boolean exercici4(int[] universe, BiPredicate<Integer, Integer> p, BiPredicate<Integer, Integer> q) {
-      return false; // TODO
-    }
+      for (int var_x : universe) {
+          boolean existe_y = false;
+          int contador_y = 0;
+          for (int var_y : universe) {
+              boolean coincide = true;
+              for (int var_z : universe) {
+                  if (p.test(var_x, var_z) != q.test(var_y, var_z)) {
+                      coincide = false;
+                      break;
+                  }
+              }
+              if (coincide) {
+                  existe_y = true;
+                  contador_y++;
+              }
+          }
+          if (existe_y && contador_y == 1)  return true;
+                    }
+      return false;
+  }
 
     /*
      * Aquí teniu alguns exemples i proves relacionades amb aquests exercicis (vegeu `main`)
@@ -239,8 +282,43 @@ class Entrega {
      * Podeu soposar que `a`, `b` i `c` estan ordenats de menor a major.
      */
     static int exercici1(int[] a, int[] b, int[] c) {
-      return -1; // TODO
+           
+      int union , diferencia ;
+      int elementos = 0;
+
+
+      for (int ele_B : b) {
+          if (!esta_dentro(ele_B, a)) {
+              elementos++;
+          }
+      }
+
+      if (a.length > b.length) {
+          union = a.length + elementos;
+      } else {
+          union = b.length + elementos;
+      }
+
+      elementos = 0;
+
+      for (int ele_C : c) {
+          if (esta_dentro(ele_C, a)) {
+                 elementos++;
+          }
+      }
+      diferencia = a.length - elementos;
+
+      return union * diferencia;
+  }
+
+  private static boolean esta_dentro(int num, int[] arr) {
+    for (int i = 0; i < arr.length; i++) {
+        if (arr[i] == num) { //Si l'array conté el nombre que cercam
+            return true;
+        }
     }
+    return false;
+  }
 
     /*
      * La clausura d'equivalència d'una relació és el resultat de fer-hi la clausura reflexiva, simètrica i
@@ -521,7 +599,7 @@ class Entrega {
 
       // Exercici 4
       // Composició de grafs de funcions (null si no ho son)
-
+      
       assertThat(
           exercici4(
             int05,
@@ -544,7 +622,7 @@ class Entrega {
             generateRel(int05, (x, y) -> y == (5 - x + 1) % 6)
           )
       );
-
+      
       // Exercici 5
       // trobar l'inversa (null si no existeix)
 
@@ -719,7 +797,30 @@ class Entrega {
      * abans (o igual) que el vèrtex `v` al recorregut en preordre de l'arbre.
      */
     static boolean exercici3(int[][] g, int r, int u, int v) {
-      return false; // TO DO
+      // Array per emmagatzemar l'ordre de visita en preordre per cada vèrtex
+        int[] preorder = new int[g.length];
+        Arrays.fill(preorder, -1); // Inicialitzem amb -1 per indicar que encara no ha estat visitat
+       
+        // Índex per assignar l'ordre de visita
+        int[] index = {0}; // Utilitzem un array per poder modificar el valor dins del mètode recursiu
+       
+        // Realitzem el recorregut en preordre començant per l'arrel r
+        preOrderTraversal(g, r, preorder, index);
+       
+        // Comparar les etiquetes de preordre de u i v
+        return preorder[u] <= preorder[v];
+    }
+   
+    private static void preOrderTraversal(int[][] g, int node, int[] preorder, int[] index) {
+        // Assignem l'ordre de visita al vèrtex actual
+        preorder[node] = index[0]++;
+       
+        // Recorrem els fills del vèrtex actual
+        for (int vecino : g[node]) {
+            if (preorder[vecino] == -1) { // Si el veí encara no ha estat visitat
+                preOrderTraversal(g, vecino, preorder, index);
+            }
+        }
     }
 
     /*
@@ -867,7 +968,7 @@ class Entrega {
    */
   public static void main(String[] args) {
     Tema1.tests();
-    Tema2.tests();
+    //Tema2.tests();
     Tema3.tests();
   }
 
