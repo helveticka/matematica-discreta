@@ -1,8 +1,12 @@
 import java.lang.AssertionError;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -405,12 +409,11 @@ class Entrega {
      *
      * Podeu soposar que `a` i `rel` estan ordenats de menor a major (`rel` lexicogràficament).
      */
-    static int exercici3(int[] a, int[][] rel) { //FALTA METODO CREAR HASSE
+    static int exercici3(int[] a, int[][] rel) {  //FALTA REVISARLO
       if (!esOrdreTotal(a, rel)){
         return -2;
       } else {
-        int numArestes = 0;
-        //int numArestes = construirHasse(a, rel);
+        int numArestes = construirHasse(a, rel);
         return numArestes;
       }
      
@@ -432,6 +435,36 @@ class Entrega {
       return true;
     }
 
+    static int construirHasse(int[] a, int[][] rel) {
+      int n = a.length;
+      boolean[][] matriz = new boolean[n][n];
+      for (int[] par : rel) {
+          int x = par[0];
+          int y = par[1];
+          matriz[x][y] = true;
+      }
+
+      int numArestes = 0;
+      for (int i = 0; i < n; i++) {
+          for (int j = 0; j < n; j++) {
+              if (i != j && matriz[i][j]) {
+                  boolean esMinima = true;
+                  for (int k = 0; k < n; k++) {
+                      if (k != i && k != j && matriz[i][k] && matriz[k][j]) {
+                          esMinima = false;
+                          break;
+                      }
+                  }
+                  if (esMinima) {
+                      numArestes++;
+                  }
+              }
+          }
+      }
+
+      return numArestes;
+  }
+
 
 
     /*
@@ -442,7 +475,65 @@ class Entrega {
      * lexicogràficament).
      */
     static int[][] exercici4(int[] a, int[][] rel1, int[][] rel2) {
-      return new int[][] {}; // TODO
+      //comprovam si les dues relacions son funcions
+      if (!esFuncio(a, rel1) || !esFuncio(a, rel2)) {
+        return null;
+      } else {
+        return composicio(rel1, rel2);
+      }
+    }
+
+    static boolean esFuncio(int[] a, int[][] rel) {
+        Map<Integer, Integer> mapaRel = new HashMap<>();
+        for (int[] par : rel) {
+            int x = par[0];
+            int y = par[1];
+            //comprovam si cada valor té la seva clau
+            if (mapaRel.containsKey(x)) {
+                if (mapaRel.get(x) != y) {
+                    return false; //si no té retornam fals
+                }
+            } else {
+                mapaRel.put(x, y);
+            }
+        }
+        for (int x : a) {
+            if (!mapaRel.containsKey(x)) { //si no té retornam fals
+                return false;
+            }
+        }
+        return true;
+    }
+
+    static int[][] composicio(int[][] rel1, int[][] rel2) {
+        Map<Integer, Integer> mapaRel1 = new HashMap<>();
+        Map<Integer, Integer> mapaRel2 = new HashMap<>();
+
+        for (int[] par : rel1) {
+            mapaRel1.put(par[0], par[1]);
+        }
+        for (int[] par : rel2) {
+            mapaRel2.put(par[0], par[1]);
+        }
+
+        Set<int[]> composicioSet = new HashSet<>();
+
+        for (int x : mapaRel1.keySet()) { //troba els parells relacionats i el posa a la composició
+            int y = mapaRel1.get(x);
+            if (mapaRel2.containsKey(y)) {
+                int z = mapaRel2.get(y);
+                composicioSet.add(new int[]{x, z});
+            }
+        }
+
+        //converteix la composició en array
+        int[][] composicioArray = new int[composicioSet.size()][2];
+        int index = 0;
+        for (int[] par : composicioSet) {
+            composicioArray[index++] = par;
+        }
+
+        return composicioArray;
     }
 
     /*
@@ -626,7 +717,7 @@ class Entrega {
       // Exercici 5
       // trobar l'inversa (null si no existeix)
 
-      assertThat(exercici5(int05, int08, x -> x + 3) == null);
+    assertThat(exercici5(int05, int08, x -> x + 3) == null);
 
       assertThat(
           Arrays.deepEquals(
@@ -739,59 +830,56 @@ class Entrega {
      * Retornau el nombre mínim de moviments, o -1 si no és possible arribar-hi.
      */
     static int exercici2(int w, int h, int i, int j) {
-      class Casilla{
-        int indice;
-        int[] movimientos = new int[4];
+      //moviments de los caballos
+      int[] movX = {2, 2, -2, -2, 1, 1, -1, -1};
+      int[] movY = {1, -1, 1, -1, 2, -2, 2, -2};
+      //si inici = final
+      if (i == j) return 0;
 
-        Casilla(int i, int w, int h){
-          this.indice = i;
-          this.movimientos = generarMovimientos(w, h, i);
-        }
-
-        static int[] generarMovimientos(int w, int h, int i){
-          int[] aux = new int[4];
-          int indice = 0;
-          if (w == 0 | w == 1 | h == 0 | h == 1 | (h == 2 & w == 2)){
-            return null;
-          } else {
-            if (i <= w/2){
-              i = i + 2;
-            } else {
-              i = i - 2;
-            } 
-            if (i < h/2){
-              i = i + w;
-              aux[indice] = i;
-              indice++;
-
-            } else if (i > h /2) {
-              i = i + w;
-              aux[indice] = i;
-              indice++;
-            } else {
-              int auxi;
-              auxi = i;
-              i = i + w;
-              aux[indice] = i;
-              indice++;
-              i = auxi + w;
-              aux[indice] = i;
-              indice++;
-            }
-            return aux;
-          }
+      boolean[][] visited = new boolean[w][h]; //array visitades
+      Queue<int[]> coa = new LinkedList<>(); //coa
+      
+      //coordenades en (x,y)
+      int startX = i % w;
+      int startY = i / w;
+      int endX = j % w;
+      int endY = j / w;
+      
+      //afegim posInicial a la coa i la marcam com visitada
+      coa.add(new int[]{startX, startY, 0});
+      visited[startX][startY] = true;
+      
+      while (!coa.isEmpty()) {
+          int[] pos = coa.poll();
+          int x = pos[0];
+          int y = pos[1];
+          int numMoves = pos[2];
           
-        }
+          //per tots els movimentos posibles comprovam si algun arriba al final
+          for (int k = 0; k < 8; k++) {
+              int newPosX = x + movX[k];
+              int newPosY = y + movY[k];
+              
+              //si arriba al final retornam el numMoviment
+              if (newPosX == endX && newPosY == endY) {
+                  return numMoves + 1;
+              }
+              
+              //comprobam si la posició és vàlida i la marcam com a visitada
+              if (isValid(newPosX, newPosY, w, h) && !visited[newPosX][newPosY]) {
+                  coa.add(new int[]{newPosX, newPosY, numMoves + 1});
+                  visited[newPosX][newPosY] = true;
+              }
+          }
       }
-      if (w == 0 | w == 1 | h == 0 | h == 1 | (h == 2 & w == 2)){
-        return -1; 
-      } else {
+      
+      return -1; // No es posible llegar
+  }
 
-         return 0;
-      }
-        
-    }
-
+  //comprova que la posició no es troba fora del limits del tauler
+  static boolean isValid(int x, int y, int w, int h) {
+      return x >= 0 && x < w && y >= 0 && y < h;
+  }
     /*
      * Donat un arbre arrelat (graf dirigit `g`, amb arrel `r`), decidiu si el vèrtex `u` apareix
      * abans (o igual) que el vèrtex `v` al recorregut en preordre de l'arbre.
@@ -968,7 +1056,7 @@ class Entrega {
    */
   public static void main(String[] args) {
     Tema1.tests();
-    //Tema2.tests();
+    Tema2.tests();
     Tema3.tests();
   }
 
