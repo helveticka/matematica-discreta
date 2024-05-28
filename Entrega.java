@@ -1062,7 +1062,20 @@ class Entrega {
      * Calculau el mínim comú múltiple de `a` i `b`.
      */
     static int exercici1(int a, int b) {
-      return -1; // TO DO
+      int producte = a * b;
+        if (producte < 0) {
+            producte = -producte;
+        }
+        return producte / gcd(a, b);
+    }
+
+    static int gcd(int a, int b) {
+      while (b != 0) {
+          int aux = b;
+          b = a % b;
+          a = aux;
+      }
+      return a;
     }
 
     /*
@@ -1101,7 +1114,23 @@ class Entrega {
      * qüestió de segons independentment de l'entrada.
      */
     static int exercici4(int n, int k, int p) {
-      return -1; // TO DO
+      int result = 1;
+        
+        // N es positiu dins modul p
+        n = ((n % p) + p) % p;  
+        
+        if (n == 0) return 0;  // Si n es multiple de p
+        
+        while (k > 0) {
+            // Si k es imparell, multiplica n amb el resultat
+            if ((k & 1) == 1) {
+                result = (int)(((long)result * n) % p);
+            }
+            // k es parell
+            k = k >> 1;  // k = k / 2
+            n = (int)(((long)n * n) % p);  // Canvia n a n^2
+        }
+        return result;
     }
 
     /*
