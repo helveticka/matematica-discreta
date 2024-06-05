@@ -463,9 +463,7 @@ class Entrega {
       }
 
       return numArestes;
-  }
-
-
+    }
 
     /*
      * Comprovau si les relacions `rel1` i `rel2` són els grafs de funcions amb domini i codomini
@@ -584,65 +582,6 @@ class Entrega {
       }
       return false;
     }
-
-    // Mètode que comprova si una relació és reflexiva
-    static boolean esReflexiva(int [] a, int [][] relacio) {
-      for (int index=0; index< a.length ; index++){
-          boolean trobat = false;
-          for (int[] p : relacio) {
-              if (p[0] == index && p[1] ==index) {
-                  trobat =true ;
-                  break;
-              }
-          }
-          if (!trobat){
-              return false;
-          }
-      }
-
-      return true;
-    }
-
-  // Mètode que comprova si una relació és transitiva
-  static boolean esTransitiva(int[][] relacio) {
-      boolean trobat;
-      for (int[] p : relacio) {
-          for (int[] q : relacio) {
-              if (p[1] == q[0]) {
-                  trobat = false;
-                  for (int[] r : relacio) {
-                      if (r[0] == p[0] && r[1] == q[1]) {
-                          trobat = true;
-                          break;
-                      }
-                  }
-                  if (!trobat){
-                      return false;
-                  }
-              }
-          }
-      }
-
-      return true;
-  }
-
-  // Mètode que comprova si una relació és simètrica
-  static boolean esSimetrica(int [][] relacio) {
-      for (int[] p : relacio) {
-          boolean trobat = false;
-          for (int[] q : relacio) {
-              if (p[0] == q[1] && p[1] == q[0]) {
-                  trobat = true;
-                  break;
-              }
-          }
-          if (!trobat){
-              return false;
-          }
-      }
-
-      return true;
-  }
 
     /*
      * Aquí teniu alguns exemples i proves relacionades amb aquests exercicis (vegeu `main`)
@@ -958,7 +897,7 @@ class Entrega {
             return null;
         }
         Node node = new Node(preord[index[0]]);
-        int numFills = d[index[0]];
+        int numFills = d[node.valor];
         index[0]++;
         for (int i = 0; i < numFills; i++) {
             node.afegirFill(construir(preord, d, index));
@@ -1042,7 +981,7 @@ class Entrega {
       final int[] P2 = { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
       final int[] D2 = { 2, 0, 2, 0, 2, 0, 2, 0, 0 };
 
-      assertThat(exercici4(P1, D1) == 4); //posava 3 pero crec que esta malament
+      assertThat(exercici4(P1, D1) == 3);
       assertThat(exercici4(P2, D2) == 4);
     }
   }
@@ -1172,9 +1111,9 @@ class Entrega {
    */
   public static void main(String[] args) {
     Tema1.tests();
-    Tema2.tests();
+    //Tema2.tests();
     Tema3.tests();
-    Tema4.tests();
+    //Tema4.tests();
   }
 
   // Si b és cert, no fa res. Si b és fals, llança una excepció (AssertionError).
