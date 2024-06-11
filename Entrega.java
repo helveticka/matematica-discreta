@@ -1049,7 +1049,59 @@ class Entrega {
      * Podeu suposar que `n > 1`. Recordau que no no podeu utilitzar la força bruta.
      */
     static int[] exercici2(int a, int b, int n) {
-      return new int[] {}; // TO DO
+      int d = mcd_euclides(a, n);
+      // Si d no divide a b, no hay solución
+      if (b % d != 0) {
+          return new int[]{};
+      }
+
+      // Simplificar la ecuación dividiendo por d
+      a /= d;
+      b /= d;
+      n /= d;
+
+      // Encontrar una solución particular usando el algoritmo extendido de Euclides
+      int[] result = metodo_extendido_euclides(a, n);
+      int gcd = result[0];
+      int x0 = result[1];
+
+      // Calcular la solución particular
+      x0 = (x0 * b) % n;
+      if (x0 < 0) {
+          x0 += n;
+      }
+
+      // Generar todas las soluciones
+      int[] solutions = new int[d];
+      for (int i = 0; i < d; i++) {
+          solutions[i] = (x0 + i * n) % (n * d);
+      }
+
+      return solutions;
+    }
+
+    // Función para calcular el MCD usando el algoritmo de Euclides
+    static int mcd_euclides(int a, int b) {
+      while (b != 0) {
+          int t = b;
+          b = a % b;
+          a = t;
+      }
+      return a;
+    }
+
+    // Función para encontrar el inverso modular usando el algoritmo extendido de Euclides
+    static int[] metodo_extendido_euclides(int a, int b) {
+        if (b == 0) {
+            return new int[]{a, 1, 0};
+        }
+        int[] valores = metodo_extendido_euclides(b, a % b);
+        int d = valores[0];
+        int x1 = valores[1];
+        int y1 = valores[2];
+        int x = y1;
+        int y = x1 - (a / b) * y1;
+        return new int[]{d, x, y};
     }
 
     /*
@@ -1097,23 +1149,28 @@ class Entrega {
      * qüestió de segons independentment de l'entrada.
      */
     static int exercici4(int n, int k, int p) {
-      int result = 1;
-        
-        // N es positiu dins modul p
-        n = ((n % p) + p) % p;  
-        
-        if (n == 0) return 0;  // Si n es multiple de p
-        
-        while (k > 0) {
-            // Si k es imparell, multiplica n amb el resultat
-            if ((k & 1) == 1) {
-                result = (int)(((long)result * n) % p);
-            }
-            // k es parell
-            k = k >> 1;  // k = k / 2
-            n = (int)(((long)n * n) % p);  // Canvia n a n^2
+      // Si p és 1, qualsevol nombre % 1 és 0.
+      if (p == 1) {
+        return 0;
+    }
+    // Assegurem que n és no negatiu en cas que s'entri un valor negatiu.
+    if (n < 0) {
+        n = (n % p + p) % p;
+    }
+    int result = 1; // Inicialitzem el resultat
+    n = n % p; // Reduïm n amb p per assegurar que és dins el rang [0, p-1]
+    
+    while (k > 0) {
+        // Si k és imparell, multipliquem n amb el resultat actual
+        if ((k % 2) == 1) {
+            result = (result * n) % p;
         }
-        return result;
+        // k es divideix per la meitat
+        k = k >> 1;
+        // n es multiplica per ell mateix
+        n = (n * n) % p;
+    }
+    return result;
     }
 
     /*
