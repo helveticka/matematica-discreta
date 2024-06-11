@@ -469,10 +469,10 @@ class Entrega {
       int numArestes = 0;
       for (int i = 0; i < n; i++) {
           for (int j = 0; j < n; j++) {
-              if (i != j && matriu[i][j]) {
+              if (i != j && matriz[i][j]) {
                   boolean esMinima = true;
                   for (int k = 0; k < n; k++) {
-                      if (k != i && k != j && matriu[i][k] && matriu[k][j]) {
+                      if (k != i && k != j && matriz[i][k] && matriz[k][j]) {
                           esMinima = false;
                           break;
                       }
