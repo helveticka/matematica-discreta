@@ -281,7 +281,7 @@ class Entrega {
    */
   static class Tema2 {
     /*
-     * Calculau el nombre d'elements del conjunt de parts de (a u b) × (a \ c)
+     * Calculau el nombre d'elements del conjunt (a u b) × (a \ c)
      *
      * Podeu soposar que `a`, `b` i `c` estan ordenats de menor a major.
      */
@@ -1199,7 +1199,7 @@ class Entrega {
       // n^k mod p
 
       assertThat(exercici4(2018, 2018, 5) == 4);
-      assertThat(exercici4(-2147483646, 2147483645, 679389209) == 145738906);
+      assertThat(exercici4(-2147483646, 2147483645, 46337) == 7435);
     }
   }
 
