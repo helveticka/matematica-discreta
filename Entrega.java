@@ -409,7 +409,7 @@ class Entrega {
      *
      * Podeu soposar que `a` i `rel` estan ordenats de menor a major (`rel` lexicogràficament).
      */
-    static int exercici3(int[] a, int[][] rel) {  //FALTA REVISARLO
+    static int exercici3(int[] a, int[][] rel) {  
       if (!esOrdreTotal(a, rel)){
         return -2;
       } else {
@@ -420,20 +420,42 @@ class Entrega {
     }
 
     static boolean esOrdreTotal(int[] a, int[][] rel){
-      HashSet<Integer> elements = new HashSet<>();
+      // Crear un mapa para las relaciones
+      Map<Integer, Set<Integer>> mapRelacio = new HashMap<>();
       for (int x : a) {
-          elements.add(x);
+          mapRelacio.put(x, new HashSet<>()); //relacionar cada elemento con todos los que esta relacionado
       }
+      for (int[] parell : rel) {
+          mapRelacio.get(parell[0]).add(parell[1]);
+      }
+  
+      for (int i = 0; i < a.length; i++) {
+          for (int j = 0; j < a.length; j++) {
+              int x = a[i];
+              int y = a[j];
+              if (x == y) continue;
+              
+              // relexivitat
+              if (!mapRelacio.get(x).contains(x)) {
+              return false;
+              }
 
-      for (int i = 0; i < rel.length; i++) {
-          for (int j = 0; j < rel[i].length; j++) {
-              if (!elements.contains(rel[i][j])) {
-                  return false;
+              // antisimetria
+              if (mapRelacio.get(x).contains(y) && mapRelacio.get(y).contains(x) && x != y) {
+              return false;
+              }
+
+              // transitivitat
+              for (int k = 0; k < a.length; k++) {
+                  int z = a[k];
+                  if (mapRelacio.get(x).contains(y) && mapRelacio.get(y).contains(z) && !mapRelacio.get(x).contains(z)) {
+                      return false;
+                  }
               }
           }
       }
       return true;
-    }
+  }
 
     static int construirHasse(int[] a, int[][] rel) {
       int n = a.length;
@@ -447,10 +469,10 @@ class Entrega {
       int numArestes = 0;
       for (int i = 0; i < n; i++) {
           for (int j = 0; j < n; j++) {
-              if (i != j && matriz[i][j]) {
+              if (i != j && matriu[i][j]) {
                   boolean esMinima = true;
                   for (int k = 0; k < n; k++) {
-                      if (k != i && k != j && matriz[i][k] && matriz[k][j]) {
+                      if (k != i && k != j && matriu[i][k] && matriu[k][j]) {
                           esMinima = false;
                           break;
                       }
@@ -482,21 +504,21 @@ class Entrega {
     }
 
     static boolean esFuncio(int[] a, int[][] rel) {
-        Map<Integer, Integer> mapaRel = new HashMap<>();
-        for (int[] par : rel) {
-            int x = par[0];
-            int y = par[1];
+        Map<Integer, Integer> mapRelacio = new HashMap<>();
+        for (int[] parell : rel) {
+            int x = parell[0];
+            int y = parell[1];
             //comprovam si cada valor té la seva clau
-            if (mapaRel.containsKey(x)) {
-                if (mapaRel.get(x) != y) {
+            if (mapRelacio.containsKey(x)) {
+                if (mapRelacio.get(x) != y) {
                     return false; //si no té retornam fals
                 }
             } else {
-                mapaRel.put(x, y);
+                mapRelacio.put(x, y);
             }
         }
         for (int x : a) {
-            if (!mapaRel.containsKey(x)) { //si no té retornam fals
+            if (!mapRelacio.containsKey(x)) { //si no té retornam fals
                 return false;
             }
         }
@@ -504,22 +526,22 @@ class Entrega {
     }
 
     static int[][] composicio(int[][] rel1, int[][] rel2) {
-        Map<Integer, Integer> mapaRel1 = new HashMap<>();
-        Map<Integer, Integer> mapaRel2 = new HashMap<>();
+        Map<Integer, Integer> mapRelacio1 = new HashMap<>();
+        Map<Integer, Integer> mapRelacio2 = new HashMap<>();
 
         for (int[] par : rel1) {
-            mapaRel1.put(par[0], par[1]);
+            mapRelacio1.put(par[0], par[1]);
         }
         for (int[] par : rel2) {
-            mapaRel2.put(par[0], par[1]);
+            mapRelacio2.put(par[0], par[1]);
         }
 
         Set<int[]> composicioSet = new HashSet<>();
 
-        for (int x : mapaRel1.keySet()) { //troba els parells relacionats i el posa a la composició
-            int y = mapaRel1.get(x);
-            if (mapaRel2.containsKey(y)) {
-                int z = mapaRel2.get(y);
+        for (int x : mapRelacio1.keySet()) { //troba els parells relacionats i el posa a la composició
+            int y = mapRelacio1.get(x);
+            if (mapRelacio2.containsKey(y)) {
+                int z = mapRelacio2.get(y);
                 composicioSet.add(new int[]{x, z});
             }
         }
@@ -527,8 +549,8 @@ class Entrega {
         //converteix la composició en array
         int[][] composicioArray = new int[composicioSet.size()][2];
         int index = 0;
-        for (int[] par : composicioSet) {
-            composicioArray[index++] = par;
+        for (int[] parell : composicioSet) {
+            composicioArray[index++] = parell;
         }
 
         return composicioArray;
@@ -538,14 +560,14 @@ class Entrega {
      * Comprovau si la funció `f` amb domini `dom` i codomini `codom` té inversa. Si la té, retornau
      * el seu graf (el de l'inversa). Sino, retornau null.
      */
-    static int[][] exercici5(int[] dom, int[] codom, Function<Integer, Integer> f) { //CREO QUE HECHO, NO PROBADO
+    static int[][] exercici5(int[] dom, int[] codom, Function<Integer, Integer> f) { //HECHO 
       if (esBiyectiva(dom, codom, f)) {
         int[][] graficoInversa = new int[codom.length][2];
         for (int i = 0; i < codom.length; i++) {
             int y = codom[i];
             int x = encontrarPreimagen(y, dom, f);
-            graficoInversa[i][0] = x;
-            graficoInversa[i][1] = y;
+            graficoInversa[i][0] = y;
+            graficoInversa[i][1] = x;
         }
         return graficoInversa;
     } else {
@@ -562,7 +584,7 @@ class Entrega {
         }
         codomImagen.add(y);
       }
-      return true;
+      return codomImagen.size() == codom.length;
     }
 
     static int encontrarPreimagen(int y, int[] dom, Function<Integer, Integer> f) {
@@ -1039,8 +1061,30 @@ class Entrega {
      * té solució.
      */
     static boolean exercici3(int a, int b, int c, int d, int m, int n) {
-      return false; // TO DO
+   // Verifica si las congruencias individuales tienen solución
+        if (c % gcd(a, m) != 0 || d % gcd(b, n) != 0) {
+            return false;
+        }
+        int[] sol1 = euclidesExtendido(a, m);
+        int[] sol2 = euclidesExtendido(b, n);
+
+        int x1 = (c / gcd(a, m)) * sol1[1];
+        int x2 = (d / gcd(b, n)) * sol2[1];
+
+        // Verifica la compatibilidad: x1 ≡ x2 (mod gcd(m, n))
+        return (x1 % gcd(m, n)) == (x2 % gcd(m, n));
     }
+
+    private static int[] euclidesExtendido(int a, int b) {
+      if (b == 0) {
+          return new int[]{a, 1, 0};
+      }
+      int[] resultado = euclidesExtendido(b, a % b);
+      int gcd = resultado[0];
+      int x = resultado[2];
+      int y = resultado[1] - (a / b) * resultado[2];
+      return new int[]{gcd, x, y};
+  }
 
     /*
      * Donats `n` un enter, `k > 0` enter, i `p` un nombre primer, retornau el residu de dividir n^k
