@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 /*
  * Aquesta entrega consisteix en implementar tots els mètodes annotats amb "// TODO". L'enunciat de
@@ -176,7 +175,7 @@ class Entrega {
           if (existe_y && contador_y == 1)  return true;
                     }
       return false;
-  }
+    }
 
     /*
      * Aquí teniu alguns exemples i proves relacionades amb aquests exercicis (vegeu `main`)
