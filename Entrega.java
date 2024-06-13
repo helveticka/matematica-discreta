@@ -1,16 +1,12 @@
 import java.lang.AssertionError;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /*
  * Aquesta entrega consisteix en implementar tots els mètodes annotats amb "// TODO". L'enunciat de
@@ -454,72 +450,72 @@ class Entrega {
     /*
      * Método auxiliar para verificar que es un orden total sobre a
      */
-    static boolean esOrdreTotal(int[] a, int[][] rel){
-      // Crear un mapa para las relaciones
-      Map<Integer, Set<Integer>> mapaRelacion = new HashMap<>();
-      for (int x : a) {
-          mapaRelacion.put(x, new HashSet<>()); 
-      }
-      // Relacionar cada elemento con todos los que esta relacionado
+    static boolean esOrdreTotal(int[] a, int[][] rel) {
+      int n = a.length;
+
+      // Matriz de adyacencia para representar las relaciones
+      boolean[][] matriz = new boolean[n][n];
       for (int[] par : rel) {
-          mapaRelacion.get(par[0]).add(par[1]);
+        int x = par[0];
+        int y = par[1];
+        matriz[x][y] = true;
       }
-      
-      //Verifica las propiedades para todos los valores
-      for (int i = 0; i < a.length; i++) {
-        for (int j = 0; j < a.length; j++) {
+
+      // Verificación de reflexividad
+      for (int i = 0; i < n; i++) {
+        if (!matriz[a[i]][a[i]]) {
+          return false;
+        }
+      }
+
+      // Verificación de antisimetría y transitividad
+      for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
           int x = a[i];
           int y = a[j];
           if (x == y) continue;
-              
-          // Comprovamos reflexividad
-          if (!mapaRelacion.get(x).contains(x)) {
-          return false;
+
+          // Verificación de antisimetría
+          if (matriz[x][y] && matriz[y][x] && x != y) {
+            return false;
           }
 
-          // Comporbamos antisimetria
-          if (mapaRelacion.get(x).contains(y) && mapaRelacion.get(y).contains(x) && x != y) {
-          return false;
-          }
-
-          // Comprobamos transitividad
-          for (int k = 0; k < a.length; k++) {
+          // Verificación de transitividad
+          for (int k = 0; k < n; k++) {
             int z = a[k];
-            if (mapaRelacion.get(x).contains(y) && mapaRelacion.get(y).contains(z) && !mapaRelacion.get(x).contains(z)) {
+            if (matriz[x][y] && matriz[y][z] && !matriz[x][z]) {
               return false;
             }
           }
         }
       }
-      return true;
+
+    return true;
     }
+    
     /*
      * Método auxiliar que contruye el diagrama de Hasse con un orden total 'a' y una relación 'rel'
      */
     static int construirHasse(int[] a, int[][] rel) {
       int n = a.length;
-      // Inicialización de la matriz que representa la relación
       boolean[][] matriz = new boolean[n][n];
       for (int[] par : rel) {
-          int x = par[0];
-          int y = par[1];
-          matriz[x][y] = true;
+        int x = par[0];
+        int y = par[1];
+        matriz[x][y] = true;
       }
 
       int numArestes = 0;
-      // Iteramos sobre la matriz para encontrar las arestas mínimas en el diagrama
       for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
           if (i != j && matriz[i][j]) {
             boolean esMinima = true;
-            // Comprobación de otros caminos
-            for (int k = 0; k < n; k++) {
-              if (k != i && k != j && matriz[i][k] && matriz[k][j]) {
-                esMinima = false;
-                break;
+              for (int k = 0; k < n; k++) {
+                if (k != i && k != j && matriz[i][k] && matriz[k][j]) {
+                  esMinima = false;
+                  break;
+                }
               }
-            }
-            // Si la aresta es mínima, aumentamos el contador
             if (esMinima) {
               numArestes++;
             }
@@ -529,6 +525,7 @@ class Entrega {
 
       return numArestes;
     }
+    
 
     /*
      * Comprovau si les relacions `rel1` i `rel2` són els grafs de funcions amb domini i codomini
@@ -542,7 +539,7 @@ class Entrega {
       if (!esFuncio(a, rel1) || !esFuncio(a, rel2)) {
         return null;
       } else {
-        return composicio(rel1, rel2);
+        return composicio(rel1, rel2, a);
       }
     }
 
@@ -550,107 +547,126 @@ class Entrega {
      * Método auxiliar que determina un dominio y codominio, junto a una relación, es una función
      */
     static boolean esFuncio(int[] a, int[][] rel) {
-        Map<Integer, Integer> mapaRelacio = new HashMap<>();
-        for (int[] parell : rel) {
-            int x = parell[0];
-            int y = parell[1];
-            // Comprobamos si cada valor tiene su clave
-            if (mapaRelacio.containsKey(x)) {
-                // Si no tiene, devolvemos falso
-                if (mapaRelacio.get(x) != y) {
-                    return false; 
-                }
-            // Si no 
-            } else {
-                mapaRelacio.put(x, y);
+      // Verificamos que cada elemento del dominio tiene una única imagen
+      for (int i = 0; i < a.length; i++) {
+        int x = a[i];
+        boolean encontrado = false;
+        for (int j = 0; j < rel.length; j++) {
+          if (rel[j][0] == x) {
+            if (encontrado) {
+              return false; // Más de una imagen para el mismo x
             }
+            encontrado = true;
+          }
         }
-        for (int x : a) {
-            if (!mapaRelacio.containsKey(x)) { //si no té retornam fals
-                return false;
-            }
+        if (!encontrado) {
+          return false; // No tiene imagen
         }
-        return true;
+      }
+      return true;
     }
 
-    static int[][] composicio(int[][] rel1, int[][] rel2) {
-        Map<Integer, Integer> mapaRelacio1 = new HashMap<>();
-        Map<Integer, Integer> mapaRelacio2 = new HashMap<>();
+    /*
+     * Método auxiliar que realiza la composición de dos funciones
+     */
+    static int[][] composicio(int[][] rel1, int[][] rel2, int[] a) {
+      //Creación lista de la composición
+      List<int[]> composicio = new ArrayList<>();
+      
+      //Recorre rel1 para encontrar todos los pares
+      for (int i = 0; i < rel1.length; i++) {
+        int x = rel1[i][0];
+        int y = rel1[i][1];
 
-        for (int[] par : rel1) {
-            mapaRelacio1.put(par[0], par[1]);
+        //Recorre rel2 para encontrar 'z'
+        for (int j = 0; j < rel2.length; j++) {
+          if (rel2[j][0] == y) {
+            int z = rel2[j][1];
+            //Añade a composición '(x,z)'
+            composicio.add(new int[]{x, z});
+            break; 
+          }
         }
-        for (int[] par : rel2) {
-            mapaRelacio2.put(par[0], par[1]);
-        }
+      }
 
-        Set<int[]> composicioSet = new HashSet<>();
+      //Convertimos la lista a array
+      int[][] resultado = new int[composicio.size()][2];
+      for (int i = 0; i < composicio.size(); i++) {
+        resultado[i] = composicio.get(i);
+      }
 
-        for (int x : mapaRelacio1.keySet()) { //troba els parells relacionats i el posa a la composició
-            int y = mapaRelacio1.get(x);
-            if (mapaRelacio2.containsKey(y)) {
-                int z = mapaRelacio2.get(y);
-                composicioSet.add(new int[]{x, z});
-            }
-        }
-
-        // Convierte la composición en array
-        int[][] composicioArray = new int[composicioSet.size()][2];
-        int index = 0;
-        for (int[] parell : composicioSet) {
-            composicioArray[index++] = parell;
-        }
-
-        return composicioArray;
+      return resultado;
     }
+
 
     /*
      * Comprovau si la funció `f` amb domini `dom` i codomini `codom` té inversa. Si la té, retornau
      * el seu graf (el de l'inversa). Sino, retornau null.
      */
-    static int[][] exercici5(int[] dom, int[] codom, Function<Integer, Integer> f) { //HECHO 
+    static int[][] exercici5(int[] dom, int[] codom, Function<Integer, Integer> f) {
+      //Si es biyectiva, realizamos su inversa y lo devolvemos
       if (esBiyectiva(dom, codom, f)) {
         int[][] graficoInversa = new int[codom.length][2];
         for (int i = 0; i < codom.length; i++) {
-            int y = codom[i];
-            int x = encontrarPreimagen(y, dom, f);
-            graficoInversa[i][0] = y;
-            graficoInversa[i][1] = x;
+          int y = codom[i];
+          int x = encontrarPreimagen(y, dom, f);
+          graficoInversa[i][0] = y;
+          graficoInversa[i][1] = x;
         }
         return graficoInversa;
-    } else {
+      } else {
         return null;
       }
     }
 
+    /*
+     * Método auxiliar que verifica si una funcion con dominio 'dom' y codominio 'codom'
+     * es biyectiva
+     */
     static boolean esBiyectiva(int[] dom, int[] codom, Function<Integer, Integer> f) {
-      Set<Integer> codomImagen = new HashSet<>();
+      boolean[] codomImagen = new boolean[codom.length];
+      // Verificamos que cada x solo tiene un y en el codominio
       for (int x : dom) {
-        int y = f.apply(x); 
-        if (!contieneElemento(codom, y) || codomImagen.contains(y)) {
-            return false; 
+        int y = f.apply(x);
+        int idx = encontrarIndice(codom, y);
+        if (idx == -1 || codomImagen[idx]) {
+          return false; 
         }
-        codomImagen.add(y);
+        codomImagen[idx] = true;
       }
-      return codomImagen.size() == codom.length;
+      
+      //Verificamos que todos los elementos tengan una imagen
+      for (boolean imagen : codomImagen) {
+        if (!imagen) {
+          return false;
+        }
+      }
+
+      return true;
     }
 
+    /*
+     * Método auxiliar que encuentra una preimagen de un valor en el codominio de una función
+     */
     static int encontrarPreimagen(int y, int[] dom, Function<Integer, Integer> f) {
-        for (int x : dom) {
-            if (f.apply(x) == y) {
-                return x;
-            }
+      for (int x : dom) {
+        if (f.apply(x) == y) {
+          return x;
         }
-        return -1; 
+      }
+      return -1;
     }
 
-    static boolean contieneElemento(int[] arr, int elemento) {
-      for (int x : arr) {
-          if (x == elemento) {
-              return true;
-          }
+    /*
+     * Método auxiliar que encuentra el índice de un elemento en una array
+     */
+    static int encontrarIndice(int[] arr, int elemento) {
+      for (int i = 0; i < arr.length; i++) {
+        if (arr[i] == elemento) {
+          return i;
+        }
       }
-      return false;
+      return -1;
     }
 
     /*
@@ -700,7 +716,7 @@ class Entrega {
       // Exercici 4
       // Composició de grafs de funcions (null si no ho son)
       
-      assertThat(
+       assertThat(
           exercici4(
             int05,
             generateRel(int05, (x, y) -> x*x == y),
@@ -734,9 +750,9 @@ class Entrega {
             generateRel(int08, (x, y) -> y == 8 - x)
           )
       );
-      
+     
     }
-
+    
     /**
      * Ordena lexicogràficament un array de 2 dimensions
      * Per exemple:
@@ -842,62 +858,68 @@ class Entrega {
      * Retornau el nombre mínim de moviments, o -1 si no és possible arribar-hi.
      */
     static int exercici2(int w, int h, int i, int j) {
-      // Movimentos de los caballos
-      int[] movX = {2, 2, -2, -2, 1, 1, -1, -1};
-      int[] movY = {1, -1, 1, -1, 2, -2, 2, -2};
-      // Si inici = final
-      if (i == j) return 0;
-
-      // Inicialización de la array de visitadas
-      boolean[][] visitadas = new boolean[w][h]; 
-      // Inicialización de la cola
-      Queue<int[]> cola = new LinkedList<>(); 
+      // Movimientos posibles del caballo
+      int[][] movimientos = {{-2, -1}, {-2, 1}, {-1, 2}, {1, 2}, {2, 1}, {2, -1}, {-1, -2}, {1, -2}};
       
-      // Coordenades en (x,y)
+      // Si el punto inicial es el mismo que el final, retornamos 0
+      if (i == j) return 0;
+      
+      // Inicialización de la matriz de distancias
+      int[][] distancias = new int[w][h];
+      for (int[] fila : distancias) {
+        Arrays.fill(fila, -1);
+      }
+      
+      // Coordenadas en (x, y) del punto inicial y final
       int inicioX = i % w;
       int inicioY = i / w;
       int finalX = j % w;
       int finalY = j / w;
       
-      // Añadimos posición inicial a la cola y la marcamos como visitada
-      cola.add(new int[]{inicioX, inicioY, 0});
+      // Configurar la distancia inicial
+      distancias[inicioX][inicioY] = 0;
+      
+      // Marcar la celda inicial como visitada
+      boolean[][] visitadas = new boolean[w][h];
       visitadas[inicioX][inicioY] = true;
       
-      // Mientras la cola no este vacia, hacemos un poll() la posición inicial y el número de movimientos
-      while (!cola.isEmpty()) {
-          int[] pos = cola.poll();
-          int x = pos[0];
-          int y = pos[1];
-          int numMoves = pos[2];
+      // Procesar todas las celdas posibles
+      boolean iterar = true;
+      while (iterar) {
+        iterar = false;
           
-          // Para todos los movimientos posibles, comprobamos si alguno llega a la posición final
-          for (int k = 0; k < 8; k++) {
-              int newPosX = x + movX[k];
-              int newPosY = y + movY[k];
-              
-              // Si llega, devolvemos el numMove + 1
-              if (newPosX == finalX && newPosY == finalY) {
-                  return numMoves + 1;
+        // Recorrer todas las celdas del tablero
+        for (int x = 0; x < w; x++) {
+          for (int y = 0; y < h; y++) {
+            if (distancias[x][y] != -1) {
+              // Realiza el movimiento
+              for (int[] move : movimientos) {
+                int newX = x + move[0];
+                int newY = y + move[1];
+                // Comprueba que la casilla a la que hemos ido es válida y no esta visitada
+                if (esValid(newX, newY, w, h) && !visitadas[newX][newY]) {
+                  int newDistance = distancias[x][y] + 1;
+                  if (distancias[newX][newY] == -1 || newDistance < distancias[newX][newY]) {
+                    distancias[newX][newY] = newDistance;
+                    visitadas[newX][newY] = true;
+                    iterar = true; // Indicar que hay que seguir iterando
+                  }
+                }
               }
-              
-              // Sino, comprobamos que nos encontramos en una posición válida y la marcamos como visitada
-              if (isValid(newPosX, newPosY, w, h) && !visitadas[newPosX][newPosY]) {
-                  cola.add(new int[]{newPosX, newPosY, numMoves + 1});
-                  visitadas[newPosX][newPosY] = true;
-              }
+            }
           }
+        }
       }
-
-      // No es posible llegar
-      return -1; // 
+      
+      // Retornar la distancia mínima encontrada, o -1 si es inaccesible
+      return distancias[finalX][finalY];
     }
-
-    /*
-     * Método auxiliar que verifica que una posición no se encuentra fuera de los límites del tablero 
-    */
-    static boolean isValid(int x, int y, int w, int h) {
+  
+    // Método auxiliar que verifica que una posición no se encuentra fuera de los límites del tablero 
+    static boolean esValid(int x, int y, int w, int h) {
       return x >= 0 && x < w && y >= 0 && y < h;
     }
+  
     /*
      * Donat un arbre arrelat (graf dirigit `g`, amb arrel `r`), decidiu si el vèrtex `u` apareix
      * abans (o igual) que el vèrtex `v` al recorregut en preordre de l'arbre.
@@ -1192,30 +1214,14 @@ class Entrega {
       if (c % gcd(a, m) != 0 || d % gcd(b, n) != 0) {
           return false;
       }
-      int[] sol1 = euclidesExtendido(a, m);
-      int[] sol2 = euclidesExtendido(b, n);
+      int[] sol1 = metodo_extendido_euclides(a, m);
+      int[] sol2 = metodo_extendido_euclides(b, n);
 
       int x1 = (c / gcd(a, m)) * sol1[1];
       int x2 = (d / gcd(b, n)) * sol2[1];
 
-      // Verifica la compatibilidad: x1 ≡ x2 (mod gcd(m, n))
+      // Verifica la compatibilidad
       return (x1 % gcd(m, n)) == (x2 % gcd(m, n));
-    }
-    /*
-     * Método auxiliar recursivo que realiza el método de euclides extendido
-     */
-    private static int[] euclidesExtendido(int a, int b) {
-      // Cuando b = 0, el gcd es a.
-      if (b == 0) {
-          return new int[]{a, 1, 0};
-      }
-      // Llamada recursiva para ir avanzando en el algoritmo
-      int[] resultado = euclidesExtendido(b, a % b);
-      int gcd = resultado[0];
-      // Calculo de los índices de gcd
-      int x = resultado[2];
-      int y = resultado[1] - (a / b) * resultado[2];
-      return new int[]{gcd, x, y};
     }
 
     /*
