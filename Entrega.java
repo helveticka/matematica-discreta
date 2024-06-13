@@ -75,31 +75,39 @@ class Entrega {
      * Vegeu el mètode Tema1.tests() per exemples.
      */
     static int exercici1(int n) {
-
+      // Matriz para almacenar los valores de verdad de las proposiciones
       int[] proposicions = new int[n];
+      // Contador para el número de veces que la proposición completa es cierta
       int contador = 0;
+      // Variable temporal para almacenar el resultado intermedio
       int temporal;
 
+      // Vamos a iterar sobre todos los posibles valores de verdad (2^n combinaciones)
       for (int i = 0; i < (int) Math.pow(2, n); i++) {
-
-          for (int j = 0; j < n; j++) {
-              proposicions[j] = (i >> j) & 1;
+        // Llenamos la matriz de proposiciones con los valores de verdad actuales
+        for (int j = 0; j < n; j++) {
+          // Asignar a proposicions[j] el j-ésimo bit de i (0 o 1)
+          proposicions[j] = (i >> j) & 1;
+        }
+        // Inicializamos temporal con el valor de verdad de la última proposición pn
+        temporal = proposicions[n - 1];
+        // Evaluamos la expresión de derecha a izquierda
+        for (int j = n - 2; j >= 0; j--) {
+          // Evaluamos el implicador (p -> q) de la siguiente manera
+          // Si temporal es 1 (true) y proposicions[j] es 0 (false), entonces resultado es 0 (false)
+          // De lo contrario el  resultado es 1 (true)
+          if (temporal == 1 && proposicions[j] == 0) {
+            temporal = 0;
+          } else {
+            temporal = 1;
           }
-
-          temporal = proposicions[n - 1];
-
-          for (int j = n - 2; j >= 0; j--) {
-              if (temporal == 1 && proposicions[j] == 0) {
-                  temporal = 0;
-              } else {
-                  temporal = 1;
-              }
-          }
-
-          if (temporal != 0) {
-              contador++;
-          }
+        }
+        // Si la expresión completa es cierta (temporal es 1), incrementamos el contador
+        if (temporal != 0) {
+          contador++;
+        }
       }
+      // Devolvemos el número de casos donde la proposición es cierta
       return contador;
     } 
 
@@ -140,15 +148,15 @@ class Entrega {
         boolean existeix = true;
         // Iteram amb y sobre els elements de l'univers
         for (int y : universe) {
-            // Si l'implicació és falsa, no existeix l'element x
-            if (q.test(x, y) && !p.test(x)) {
-                existeix = false;
-            }
+          // Si l'implicació és falsa, no existeix l'element x
+          if (q.test(x, y) && !p.test(x)) {
+            existeix = false;
+          }
         }
         if (existeix) {
-            return true;
+          return true;
         }
-    }
+      }
     return false;
     }
 
@@ -156,24 +164,32 @@ class Entrega {
      * És cert que ∃x : ∃!y : ∀z : P(x,z) <-> Q(y,z) ?
      */
     static boolean exercici4(int[] universe, BiPredicate<Integer, Integer> p, BiPredicate<Integer, Integer> q) {
+      // Iteramos sobre cada elemento en el universo como el posible valor de x
       for (int var_x : universe) {
-          boolean existe_y = false;
-          int contador_y = 0;
-          for (int var_y : universe) {
-              boolean coincide = true;
-              for (int var_z : universe) {
-                  if (p.test(var_x, var_z) != q.test(var_y, var_z)) {
-                      coincide = false;
-                      break;
-                  }
-              }
-              if (coincide) {
-                  existe_y = true;
-                  contador_y++;
-              }
+        boolean existe_y = false;   // Para verificar si existe un único y que cumpla la condición
+        int contador_y = 0;         // Contador para contar cuántos y cumplen la condición
+        // Iteramos sobre cada elemento en el universo como el posible valor de y
+        for (int var_y : universe) {
+          boolean coincide = true;  // Para verificar si para todos z, P(x, z) <-> Q(y, z) es verdadero
+          // Iteramos sobre cada elemento en el universo como el posible valor de z
+          for (int var_z : universe) {
+            // Verificar si P(x, z) es diferente de Q(y, z), en cuyo caso no coincide
+            if (p.test(var_x, var_z) != q.test(var_y, var_z)) {
+              coincide = false;
+              break;  // Si no coincide para algún z, salir del bucle
+            }
           }
-          if (existe_y && contador_y == 1)  return true;
-                    }
+          // Si para todos los z, P(x, z) <-> Q(y, z) es verdadero
+          if (coincide) {
+            existe_y = true;  // Marcamos que existe al menos un y que cumple la condición
+            contador_y++;     // Incrementamos el contador de y que cumplen la condición
+          }
+        }
+        // Si existe exactamente un y que cumple la condición para este x
+        if (existe_y && contador_y == 1){
+          return true;  // La proposición es verdadera, retornar true
+        }
+      }
       return false;
     }
 
