@@ -166,28 +166,35 @@ class Entrega {
     static boolean exercici4(int[] universe, BiPredicate<Integer, Integer> p, BiPredicate<Integer, Integer> q) {
       // Iteramos sobre cada elemento en el universo como el posible valor de x
       for (int var_x : universe) {
-        boolean existe_y = false;   // Para verificar si existe un único y que cumpla la condición
-        int contador_y = 0;         // Contador para contar cuántos y cumplen la condición
+        // Para verificar si existe un único y que cumpla la condición
+        boolean existe_y = false;
+         // Contador para contar cuántos y cumplen la condición
+        int contador_y = 0;
         // Iteramos sobre cada elemento en el universo como el posible valor de y
         for (int var_y : universe) {
-          boolean coincide = true;  // Para verificar si para todos z, P(x, z) <-> Q(y, z) es verdadero
+          // Para verificar si para todos z, P(x, z) <-> Q(y, z) es verdadero
+          boolean coincide = true;
           // Iteramos sobre cada elemento en el universo como el posible valor de z
           for (int var_z : universe) {
             // Verificar si P(x, z) es diferente de Q(y, z), en cuyo caso no coincide
             if (p.test(var_x, var_z) != q.test(var_y, var_z)) {
               coincide = false;
-              break;  // Si no coincide para algún z, salir del bucle
+              // Si no coincide para algún z, salir del bucle
+              break;  
             }
           }
           // Si para todos los z, P(x, z) <-> Q(y, z) es verdadero
           if (coincide) {
-            existe_y = true;  // Marcamos que existe al menos un y que cumple la condición
-            contador_y++;     // Incrementamos el contador de y que cumplen la condición
+            // Marcamos que existe al menos un y que cumple la condición
+            existe_y = true;  
+            // Incrementamos el contador de y que cumplen la condición
+            contador_y++;     
           }
         }
         // Si existe exactamente un y que cumple la condición para este x
         if (existe_y && contador_y == 1){
-          return true;  // La proposición es verdadera, retornar true
+          // La proposición es verdadera, retornar true
+          return true;  
         }
       }
       return false;
@@ -301,43 +308,53 @@ class Entrega {
      * Podeu soposar que `a`, `b` i `c` estan ordenats de menor a major.
      */
     static int exercici1(int[] a, int[] b, int[] c) {
-           
-      int union , diferencia ;
-      int elementos = 0;
+      int union, diferencia;
+      // Variable para contar elementos adicionales en la unión
+      int elementos = 0;  
 
-
+      // Calcular el número de elementos en a U b (unión de a y b)
       for (int ele_B : b) {
-          if (!esta_dentro(ele_B, a)) {
-              elementos++;
-          }
-      }
-
-      if (a.length > b.length) {
-          union = a.length + elementos;
-      } else {
-          union = b.length + elementos;
-      }
-
-      elementos = 0;
-
-      for (int ele_C : c) {
-          if (esta_dentro(ele_C, a)) {
-                 elementos++;
-          }
-      }
-      diferencia = a.length - elementos;
-
-      return union * diferencia;
-  }
-
-  private static boolean esta_dentro(int num, int[] arr) {
-    for (int i = 0; i < arr.length; i++) {
-        if (arr[i] == num) { //Si l'array conté el nombre que cercam
-            return true;
+        // Si ele_B no está en a
+        if (!esta_dentro(ele_B, a)) {
+          // Incrementamos el contador de elementos adicionales
+          elementos++;
         }
+      }
+      // Calcular el tamaño de la unión
+      // La unión incluye todos los elementos de a más los elementos adicionales de b
+      if (a.length > b.length) {
+        union = a.length + elementos;
+      } else {
+        union = b.length + elementos;
+      }
+      // Reiniciar el contador para la diferencia
+      elementos = 0;  
+      // Calcular el número de elementos en a \ c (diferencia entre a y c)
+      for (int ele_C : c) {
+        // Si ele_C está en a
+        if (esta_dentro(ele_C, a)) {
+          // Incrementar el contador de elementos que están en a y c
+          elementos++;   
+        }
+      }
+      // La diferencia es el tamaño de a menos los elementos que están en c
+      diferencia = a.length - elementos;  
+      // Retornar el producto del tamaño de la unión y la diferencia
+      return union * diferencia;
     }
-    return false;
-  }
+
+    /*
+    * Método auxiliar para verificar si un número está en una matriz
+    */
+    private static boolean esta_dentro(int num, int[] arr) {
+      for (int i = 0; i < arr.length; i++) {
+        // Si la matriz contiene el número que buscamos
+        if (arr[i] == num) { 
+          return true;
+        }
+      }
+      return false;
+    }
 
     /*
      * La clausura d'equivalència d'una relació és el resultat de fer-hi la clausura reflexiva, simètrica i
@@ -354,65 +371,65 @@ class Entrega {
 
       // Inicialitzam la clausura a false
       for (int i = 0; i < n; i++) {
-          for (int j = 0; j < n; j++) {
-              clausura[i][j] = false;
-          }
+        for (int j = 0; j < n; j++) {
+          clausura[i][j] = false;
+        }
       }
 
       // Omplim elements de la clausura amb les relacions que ho són
       for (int[] pair : rel) {
-          int fila = pair[0];
-          int columna = pair[1];
+        int fila = pair[0];
+        int columna = pair[1];
 
-          // Trobam els índexs corresponents als valors de fila i columna
-          int filaIndex = -1;
-          int columnaIndex = -1;
+        // Trobam els índexs corresponents als valors de fila i columna
+        int filaIndex = -1;
+        int columnaIndex = -1;
 
-          for (int i = 0; i < n; i++) {
-              if (a[i] == fila) {
-                  filaIndex = i;
-              }
-              if (a[i] == columna) {
-                  columnaIndex = i;
-              }
-          }
+        for (int i = 0; i < n; i++) {
+            if (a[i] == fila) {
+              filaIndex = i;
+            }
+            if (a[i] == columna) {
+              columnaIndex = i;
+            }
+        }
 
-          // Asseguram que els índexs estan dins dels límits de la matriu
-          if (filaIndex != -1 && columnaIndex != -1) {
-              clausura[filaIndex][columnaIndex] = true;
-          }
+        // Asseguram que els índexs estan dins dels límits de la matriu
+        if (filaIndex != -1 && columnaIndex != -1) {
+          clausura[filaIndex][columnaIndex] = true;
+        }
       }
 
       // Aplicam la clausura reflexiva
       for (int i = 0; i < n; i++) {
-          clausura[i][i] = true;
+        clausura[i][i] = true;
       }
 
       // Aplicam la clausura simètrica
       for (int i = 0; i < n; i++) {
-          for (int j = 0; j < n; j++) {
-              if (clausura[i][j]) {
-                  clausura[j][i] = true;
-              }
+        for (int j = 0; j < n; j++) {
+          if (clausura[i][j]) {
+            clausura[j][i] = true;
           }
+        }
       }
 
       // Aplicam la clausura transitiva (algorisme Floyd-Warshall)
       for (int k = 0; k < n; k++) {
-          for (int i = 0; i < n; i++) {
-              for (int j = 0; j < n; j++) {
-                  clausura[i][j] = clausura[i][j] || (clausura[i][k] && clausura[k][j]);
-              }
+        for (int i = 0; i < n; i++) {
+          for (int j = 0; j < n; j++) {
+            clausura[i][j] = clausura[i][j] || (clausura[i][k] && clausura[k][j]);
           }
+        }
       }
 
       // Comptar el cardinal
       for (int i = 0; i < n; i++) {
-          for (int j = 0; j < n; j++) {
-              if (clausura[i][j]) {
-                  cardinal++;
-              }
+        for (int j = 0; j < n; j++) {
+          if (clausura[i][j]) {
+            cardinal++;
           }
+        }
       }
 
       return cardinal;
@@ -431,9 +448,11 @@ class Entrega {
         int numArestes = construirHasse(a, rel);
         return numArestes;
       }
-     
     }
 
+    /*
+     * Método auxiliar para verificar que es un orden total
+     */
     static boolean esOrdreTotal(int[] a, int[][] rel){
       // Crear un mapa para las relaciones
       Map<Integer, Set<Integer>> mapRelacio = new HashMap<>();
@@ -774,23 +793,26 @@ class Entrega {
       
       // Comprovam que tots els nodes s'han vistat
       for (boolean nodeVisitat : visitats) {
-          if (!nodeVisitat) {
-              return false;
-          }
+        if (!nodeVisitat) {
+          return false;
+        }
       }
       return true;
     }
 
+    /*
+     * Mètode auxiliar que realitza una cerca dfs
+     */
     static void dfs(int[][] g, int node, boolean[] visitat) {
       // El node actual l'hem visitat
       visitat[node] = true;
       
       // Recòrrer els nodes connectats
       for (int vei : g[node]) {
-          if (!visitat[vei]) {
-              // Si no hem visitat el vei, aplicam recursivament dfs
-              dfs(g, vei, visitat);
-          }
+        if (!visitat[vei]) {
+          // Si no hem visitat el vei, aplicam recursivament dfs
+          dfs(g, vei, visitat);
+        }
       }
     }
 
@@ -862,29 +884,35 @@ class Entrega {
      */
     static boolean exercici3(int[][] g, int r, int u, int v) {
       // Array per emmagatzemar l'ordre de visita en preordre per cada vèrtex
-        int[] preorder = new int[g.length];
-        Arrays.fill(preorder, -1); // Inicialitzem amb -1 per indicar que encara no ha estat visitat
-       
-        // Índex per assignar l'ordre de visita
-        int[] index = {0}; // Utilitzem un array per poder modificar el valor dins del mètode recursiu
-       
-        // Realitzem el recorregut en preordre començant per l'arrel r
-        preOrderTraversal(g, r, preorder, index);
-       
-        // Comparar les etiquetes de preordre de u i v
-        return preorder[u] <= preorder[v];
+      int[] preorder = new int[g.length];
+      // Inicialitzem amb -1 per indicar que encara no ha estat visitat
+      Arrays.fill(preorder, -1);
+      
+      // Índex per assignar l'ordre de visita
+      // Utilitzem un array per poder modificar el valor dins del mètode recursiu
+      int[] index = {0}; 
+      
+      // Realitzem el recorregut en preordre començant per l'arrel r
+      preOrderTraversal(g, r, preorder, index);
+      
+      // Comparar les etiquetes de preordre de u i v
+      return preorder[u] <= preorder[v];
     }
    
+    /*
+     * Mètode auxiliar que comprova que és un preordre
+     */
     private static void preOrderTraversal(int[][] g, int node, int[] preorder, int[] index) {
-        // Assignem l'ordre de visita al vèrtex actual
-        preorder[node] = index[0]++;
-       
-        // Recorrem els fills del vèrtex actual
-        for (int vecino : g[node]) {
-            if (preorder[vecino] == -1) { // Si el veí encara no ha estat visitat
-                preOrderTraversal(g, vecino, preorder, index);
-            }
+      // Assignem l'ordre de visita al vèrtex actual
+      preorder[node] = index[0]++;
+      
+      // Recorrem els fills del vèrtex actual
+      for (int vecino : g[node]) {
+        // Si el veí encara no ha estat visitat
+        if (preorder[vecino] == -1) { 
+          preOrderTraversal(g, vecino, preorder, index);
         }
+      }
     }
 
     /*
@@ -895,8 +923,11 @@ class Entrega {
      * L'altura d'un arbre arrelat és la major distància de l'arrel a les fulles.
      */
     static int exercici4(int[] preord, int[] d) {
+      // Cream un objecte arbre
       Arbre arbre = new Arbre();
+      // Omplim l'arbre segons el preordre i els graus
       Node arrel = arbre.crearArbre(preord, d);
+      // Calculam l'altura de l'arbre
       return arbre.calcularAltura(arrel);
     }
 
@@ -908,12 +939,12 @@ class Entrega {
       List<Node> fills;
   
       public Node(int valor) {
-          this.valor = valor;
-          this.fills = new ArrayList<>();
+        this.valor = valor;
+        this.fills = new ArrayList<>();
       }
   
       public void afegirFill(Node fill) {
-          fills.add(fill);
+        fills.add(fill);
       }
     }
 
@@ -928,7 +959,9 @@ class Entrega {
         return construir(preord, d, index);
       }
 
-      // Mètode recursiu que construeix un arbre
+      /*
+       * Mètode recursiu que construeix un arbre
+       */
       private Node construir(int[] preord, int[] d, int[] index) {
         if (index[0] >= preord.length) {
             return null;
@@ -942,7 +975,9 @@ class Entrega {
         return node;
       }
 
-      // Mètode que calcula l'altura d'un arbre a partir d'un node determinat
+      /*
+       * Mètode que calcula l'altura d'un arbre a partir d'un node determinat
+       */
       public int calcularAltura(Node node) {
         if (node == null) {
           return -1;
@@ -1039,12 +1074,17 @@ class Entrega {
      */
     static int exercici1(int a, int b) {
       int producte = a * b;
-        if (producte < 0) {
-            producte = -producte;
-        }
-        return producte / gcd(a, b);
+      // Si el producte és negatiu
+      if (producte < 0) {
+        // Canviar el signe
+        producte = -producte;
+      }
+      return producte / gcd(a, b);
     }
 
+    /*
+     * Mètode auxiliar recursiu que analitza el residu de a entre b fins que dona 0
+     */
     static int gcd(int a, int b) {
       while (b != 0) {
           int aux = b;
@@ -1167,25 +1207,27 @@ class Entrega {
       // Si p és 1, qualsevol nombre % 1 és 0.
       if (p == 1) {
         return 0;
-    }
-    // Assegurem que n és no negatiu en cas que s'entri un valor negatiu.
-    if (n < 0) {
+      }
+      // Assegurem que n és no negatiu en cas que s'entri un valor negatiu.
+      if (n < 0) {
         n = (n % p + p) % p;
-    }
-    int result = 1; // Inicialitzem el resultat
-    n = n % p; // Reduïm n amb p per assegurar que és dins el rang [0, p-1]
+      }
+      // Inicialitzem el resultat
+      int result = 1;   
+      // Reduïm n amb p per assegurar que és dins el rang [0, p-1]
+      n = n % p;        
     
-    while (k > 0) {
+      while (k > 0) {
         // Si k és imparell, multipliquem n amb el resultat actual
         if ((k % 2) == 1) {
-            result = (result * n) % p;
+          result = (result * n) % p;
         }
         // k es divideix per la meitat
         k = k >> 1;
         // n es multiplica per ell mateix
         n = (n * n) % p;
-    }
-    return result;
+      }
+      return result;
     }
 
     /*
@@ -1234,9 +1276,6 @@ class Entrega {
 
   // Si b és cert, no fa res. Si b és fals, llança una excepció (AssertionError).
   static void assertThat(boolean b) {
-    if (!b)
-      throw new AssertionError();
+    if (!b) throw new AssertionError();
   }
 }
-
-// vim: set textwidth=100 shiftwidth=2 expandtab :
