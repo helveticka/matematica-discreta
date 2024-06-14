@@ -554,13 +554,15 @@ class Entrega {
         for (int j = 0; j < rel.length; j++) {
           if (rel[j][0] == x) {
             if (encontrado) {
-              return false; // Más de una imagen para el mismo x
+              // Más de una imagen para el mismo x
+              return false; 
             }
             encontrado = true;
           }
         }
         if (!encontrado) {
-          return false; // No tiene imagen
+          // No tiene imagen
+          return false; 
         }
       }
       return true;
@@ -641,7 +643,6 @@ class Entrega {
           return false;
         }
       }
-
       return true;
     }
 
@@ -902,7 +903,8 @@ class Entrega {
                   if (distancias[newX][newY] == -1 || newDistance < distancias[newX][newY]) {
                     distancias[newX][newY] = newDistance;
                     visitadas[newX][newY] = true;
-                    iterar = true; // Indicar que hay que seguir iterando
+                    // Indicar que hay que seguir iterando
+                    iterar = true; 
                   }
                 }
               }
@@ -1125,7 +1127,7 @@ class Entrega {
     }
 
     /*
-     * Mètode auxiliar recursiu que analitza el residu de a entre b fins que dona 0
+     * Mètode auxiliar recursiu que calcula el MCD
      */
     static int gcd(int a, int b) {
       while (b != 0) {
