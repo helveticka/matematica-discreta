@@ -16,3 +16,10 @@ aprendre'n. Per aquesta entrega, és suficient que
 _Utilitzar git i GitHub és opcional per aquesta entrega, alternativament podeu
 descarregar [`Entrega.java`](Entrega.java) i actualitzar-lo manualment quan hi
 hagui canvis._
+
+## Authors
+Developed by [Antonio Contestí](https://github.com/tcontesti), [Marc Ferrer](https://github.com/Kow13) & [Harpo Joan](https://github.com/helveticka)
+
+## License
+This repository is licensed under a Creative Commons Attribution-NonCommercial 4.0 International License.
+Copyright (c) 2024 Antonio Contestí, Marc Ferrer & Harpo Joan
