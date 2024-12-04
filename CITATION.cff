@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+authors:
+- family-names: "Contestí"
+  given-names: "Antonio"
+- family-names: "Ferrer"
+  given-names: "Marc"
+- family-names: "Joan"
+  given-names: "Harpo"
+title: "Pràctica final de Matemàtica Discreta"
+date-released: "2024"
+url: "https://github.com/helveticka/matematica-discreta"
