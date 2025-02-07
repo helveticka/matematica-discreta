@@ -1,7 +1,7 @@
 # Matemàtica Discreta
 
 ## Content
-This repository stores the Java file *Entrega.java*, in which we've developed different algorithms to solve the math exercices.
+This repository stores the Java file *Entrega.java*, in which we've developed different algorithms to solve the math exercices, including logic-programming, graphs manipulation and algebra algorithms.
 
 ## Authors
 Developed by [Antonio Contestí](https://github.com/tcontesti), [Marc Ferrer](https://github.com/Kow13) & [Harpo Joan](https://github.com/helveticka)
