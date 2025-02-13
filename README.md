@@ -1,4 +1,4 @@
-# Matemàtica Discreta
+# Matemàtica Discreta - 20300
 
 ## Content
 This repository stores the Java file *Entrega.java*, in which we've developed different algorithms to solve the math exercices, including logic-programming, graphs manipulation and algebra algorithms.
